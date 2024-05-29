@@ -17,8 +17,8 @@ jobs:
       - name: Verifies the format of terraform files
         run: terraform fmt -check .
 
-      - name: Checks terraform syntax
-        run: terraform validate
-
       - name: Initializes terraform configuration
         run: terraform init
+
+      - name: Checks terraform syntax
+        run: terraform validate

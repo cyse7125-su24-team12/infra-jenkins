@@ -41,12 +41,12 @@ resource "aws_route_table_association" "main" {
   route_table_id = aws_route_table.jenkins_subnet_rt.id
 }
 
-resource "aws_security_group" "ssh" {
+resource "aws_security_group" "allow_https" {
   vpc_id = aws_vpc.jenkins_vpc.id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -63,35 +63,27 @@ resource "aws_security_group" "ssh" {
   }
 }
 
-resource "aws_security_group" "http_8080" {
-  vpc_id = aws_vpc.jenkins_vpc.id
+data "aws_ami" "latest_csye7125_ami_id" {
+  most_recent = true
+  owners      = ["self"]
 
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  filter {
+    name   = "name"
+    values = ["csye7125-*"]
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "jenkins_instance"
+  filter {
+    name   = "state"
+    values = ["available"]
   }
 }
 
 resource "aws_instance" "jenkins" {
-  ami           = "ami-08c1a6e9e03462636"
+  ami           = data.aws_ami.latest_csye7125_ami_id.id
   instance_type = "t2.medium"
   subnet_id     = aws_subnet.jenkins_subnet.id
   security_groups = [
-    aws_security_group.ssh.id,
-    aws_security_group.http_8080.id
+    aws_security_group.allow_https.id
   ]
 
   tags = {

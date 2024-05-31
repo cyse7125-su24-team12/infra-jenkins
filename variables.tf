@@ -8,7 +8,7 @@ variable "jenkins_vpc" {
   type = string
 }
 variable "jenkins_subnet" {
-  type = string 
+  type = string
 }
 variable "jenkins_subnet_zone" {
   type = string

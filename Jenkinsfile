@@ -88,7 +88,6 @@ pipeline {
                     # Extract the commit message from each commit JSON object
                     COMMIT_MESSAGE=$(echo "$COMMIT" | jq -r '.commit.message')
 
-
                     # Echo and lint the commit message
                     echo "Linting message: $COMMIT_MESSAGE"
                     echo "$COMMIT_MESSAGE" | npx commitlint

@@ -1,33 +1,40 @@
 pipeline {
-  agent any
-  stages {
-    stage('Verify Terraform Format') {
-      steps {
-        script {
-          sh 'terraform fmt -check .'
-        }
-      }
+    agent any
+    tools {
+        nodejs 'Node 20'
     }
-
-    stage('Initialize Terraform') {
-      steps {
-        script {
-          sh 'terraform init'
-        }
-      }
+    environment {
+        CURRENT_VERSION = currentVersion()
+        NEXT_VERSION = nextVersion()
     }
-
-    stage('Check Terraform Syntax') {
-      steps {
-        script {
-          sh 'terraform validate'
+    stages {
+        stage('Verify Terraform Format') {
+            steps {
+                script {
+                    sh 'terraform fmt -check .'
+                }
+            }
         }
-      }
-    }
 
-    stage('Setup Commitlint') {
-        steps {
-            sh '''
+        stage('Initialize Terraform') {
+            steps {
+                script {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Check Terraform Syntax') {
+            steps {
+                script {
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        stage('Setup Commitlint') {
+            steps {
+                sh '''
             # Check if commitlint is already installed and install if not
             if ! npm list -g @commitlint/cli | grep -q '@commitlint/cli'; then
                 npm install -g @commitlint/cli
@@ -42,13 +49,19 @@ pipeline {
                 echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
             fi
             '''
+            }
         }
-    }
 
-    stage('Lint commit messages') {
-        steps {
-            withCredentials([usernamePassword(credentialsId: 'git-credentials-id', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                sh '''
+        stage('Lint commit messages') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'git-credentials-id',
+                        usernameVariable: 'GIT_USERNAME',
+                        passwordVariable: 'GIT_PASSWORD'
+                    )
+                ]) {
+                    sh '''
                 node --version
                 echo " source branch: $CHANGE_BRANCH"
                 echo " target branch: $CHANGE_TARGET"
@@ -80,23 +93,23 @@ pipeline {
                     fi
                 done
                 '''
+                }
             }
         }
-    }
-    
-    stage('Get next version of the application ') {
-        steps {
-            sh '''
+
+        stage('Get next version of the application ') {
+            steps {
+                sh '''
             echo "Current version: $CURRENT_VERSION"
             echo "Next version: $NEXT_VERSION"
             '''
+            }
         }
     }
-  }
 
-  post {
-    always {
-      echo 'The Terraform validation process is completed.'
+    post {
+        always {
+            echo 'The Terraform validation process is completed.'
+        }
     }
-  }
 }

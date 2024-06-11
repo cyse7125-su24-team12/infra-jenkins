@@ -1,4 +1,4 @@
-resource "aws_security_group" "allow_https" {
+resource "aws_security_p" "allow_https" {
   vpc_id = aws_vpc.jenkins_vpc.id
 
   ingress {

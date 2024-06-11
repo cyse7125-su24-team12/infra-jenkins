@@ -1,6 +1,5 @@
 pipeline {
-    agent any  // This specifies that the pipeline can run on any available agent
-
+    agent any
     stages {
         stage('Verify Terraform Format') {
             steps {

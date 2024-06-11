@@ -1,6 +1,16 @@
 pipeline {
     agent any
     stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: '*/main']],
+                    extensions: [[$class: 'CleanCheckout']],
+                    userRemoteConfigs: [[url: "https://github.com/cyse7125-su24-team12/infra-jenkins.git", credentialsId: 'git-credentials-id']]
+                ])
+            }
+        }
+
         stage('Verify Terraform Format') {
             steps {
                 script {
@@ -27,8 +37,11 @@ pipeline {
     }
 
     post {
-        always {
-            echo 'The Terraform validation process is completed.'
+        success {
+            echo 'The Terraform validation process is completed successfully.'
+        }
+        failure {
+            echo 'The Terraform validation process is failed.'
         }
     }
 }

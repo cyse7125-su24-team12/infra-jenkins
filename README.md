@@ -10,3 +10,4 @@
     terraform validate
     terraform apply
     ```
+5. Jenkins URL: https://jenkins.cloudnativewebapp.me/github-webhook/

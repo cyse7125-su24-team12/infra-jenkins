@@ -71,3 +71,11 @@ variable "instance_type" {
 variable "elastic_ip" {
   type = string
 }
+
+variable "instance_volume_size" {
+  type = number
+}
+
+variable "instance_volume_type" {
+  type = string
+}

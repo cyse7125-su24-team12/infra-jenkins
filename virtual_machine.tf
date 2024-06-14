@@ -20,6 +20,10 @@ resource "aws_instance" "jenkins" {
   security_groups = [
     aws_security_group.allow_https.id
   ]
+  root_block_device {
+    volume_size = var.instance_volume_size
+    volume_type = var.instance_volume_type
+  }
 
   tags = {
     Name = var.instance_tag_name

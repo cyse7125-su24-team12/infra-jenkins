@@ -22,6 +22,6 @@ resource "aws_route_table" "jenkins_subnet_rt" {
 }
 
 resource "aws_route_table_association" "main" {
-  subnet_id      = aws_subnet.jenkins_subnet.id
+  subnet_id    = aws_subnet.jenkins_subnet.id
   route_table_id = aws_route_table.jenkins_subnet_rt.id
 }
